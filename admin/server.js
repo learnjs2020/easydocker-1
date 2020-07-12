@@ -4,7 +4,7 @@ var ECT = require('ect');
 var bodyParser = require('body-parser');
 var path = require('path');
 
-const port = 3000;
+const port = 10000;
 var env = {
     root : __dirname,
     dataFolder : '/var/_localData',
