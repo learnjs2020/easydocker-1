@@ -1,6 +1,7 @@
 #!/bin/bash
 SCR_DIR=$(cd `dirname $0` && pwd)
-DATA_DIR="$(dirname "$SCR_DIR")/_easydockerDATA"
+SCRIPTFN=$(basename -- $SCR_DIR)
+DATA_DIR="$(dirname "$SCR_DIR")/_"$SCRIPTFN"_DATA"
 
 markfile=$DATA_DIR/mark.data
 TMP_PATH=$DATA_DIR/_tmp
