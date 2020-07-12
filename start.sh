@@ -3,6 +3,8 @@ SCR_DIR=$(cd `dirname $0` && pwd)
 SCRIPTFN=$(basename -- $SCR_DIR)
 DATA_DIR="$(dirname "$SCR_DIR")/_"$SCRIPTFN"_DATA"
 
+mkdir -p "$DATA_DIR"/sites
+
 markfile=$DATA_DIR/mark.data
 TMP_PATH=$DATA_DIR/_tmp
 
@@ -38,6 +40,8 @@ if [[ $cntSts -gt 50  ]]; then
     echo "\nDocker running is required!"
     exit 1
 fi
+
+node initAdmin.js
 
 echo "\nloading cron job"
 # sh cron.sh > /dev/null &

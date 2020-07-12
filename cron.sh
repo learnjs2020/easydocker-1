@@ -10,7 +10,7 @@ TMP_PATH=$DATA_DIR/_tmp
 
 mkdir -p $CRON_PATH
 mkdir -p $TMP_PATH
-mkdir -p "$DATA_DIR"/sites
+
 
 markfile=$DATA_DIR/mark.data
 
