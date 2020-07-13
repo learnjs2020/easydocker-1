@@ -10,9 +10,18 @@ module.exports = {
     },
     created() {
         var me = this;
-        me.$parent.triggerSpinner = true;
+        me.initLoad();
     },
     methods :{
+        initLoad() {
+            var me = this;
+            me.$parent.triggerSpinner = true;
+            setTimeout(
+                function() {
+                    me.$parent.triggerSpinner = false;
+                }, 3000
+            );
+        },
         removeVirtualHost(serverName) {
             var me = this;
             $('#confirm_modal').modal('hide');

@@ -100,12 +100,12 @@ $(document).ready(
                 }
             },
             components: {
-            //    'vHostList' : httpVueLoader('/js/vue/vHostList.vue'),
-            //     'vHostForm' : httpVueLoader('/js/vue/vHostForm.vue'),
-                'popUpModal': httpVueLoader('/js/vue/popUpModal.vue'),
-                'dataEngine': httpVueLoader('/js/vue/dataEngine.vue'),
-                'spinner'   : httpVueLoader('/js/vue/spinner.vue'),
-                'appHeader' : httpVueLoader('/js/vue/appHeader.vue')
+                'vHostList' : httpVueLoader('/vue/vHostList.vue'),
+                'vHostForm' : httpVueLoader('/vue/vHostForm.vue'),
+                'popUpModal': httpVueLoader('/vue/popUpModal.vue'),
+                'dataEngine': httpVueLoader('/vue/dataEngine.vue'),
+                'spinner'   : httpVueLoader('/vue/spinner.vue'),
+                'appHeader' : httpVueLoader('/vue/appHeader.vue')
             }
         });
     }
