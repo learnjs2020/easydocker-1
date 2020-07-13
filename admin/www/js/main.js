@@ -100,8 +100,8 @@ $(document).ready(
                 }
             },
             components: {
-                'vHostList' : httpVueLoader('/js/vue/vHostList.vue'),
-                'vHostForm' : httpVueLoader('/js/vue/vHostForm.vue'),
+            //    'vHostList' : httpVueLoader('/js/vue/vHostList.vue'),
+            //     'vHostForm' : httpVueLoader('/js/vue/vHostForm.vue'),
                 'popUpModal': httpVueLoader('/js/vue/popUpModal.vue'),
                 'dataEngine': httpVueLoader('/js/vue/dataEngine.vue'),
                 'spinner'   : httpVueLoader('/js/vue/spinner.vue'),
