@@ -1,6 +1,6 @@
 <template>
     <div class="card shadow m-2">
-        <div class="card-body">
+        <div class="card-body alert-warning border border-warning">
             <h4>EasyDocker Admin.</h4>
         </div> 
     </div> 

@@ -21,6 +21,7 @@ var pkg = {
     tpl : ECT({ watch: true, cache: false, root: __dirname + '/views', ext : '.ect' })
 }
 
+    
 app.engine('ect', pkg.tpl.render);
 
 app.use(bodyParser.json() );       // to support JSON-encoded bodies

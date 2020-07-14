@@ -12,6 +12,30 @@ module.exports = {
         var me = this;
     },
     methods :{
+        resetVHost(serverName) {
+           var me = this;
+            if (!noSpinner) {
+                me.$parent.triggerSpinner = true;
+            }
+            $.ajax({
+                type: 'POST',
+                url:'/api',
+                data: {
+                    cmd :'loadList'
+                },
+                success: function(result) {
+                    me.$parent.triggerSpinner = false;
+                    me.$parent.commonData.list = result.list;
+                    console.log('==result.list;==>');
+                    console.log(result);
+                    console.log(result.list);
+                },
+                error: function (jqXHR, textStatus, errorThrown) { 
+                    me.$parent.triggerSpinner = false;
+                },
+                dataType: 'JSON'
+            });
+        },
         removeVirtualHost(serverName) {
             var me = this;
             $('#confirm_modal').modal('hide');
@@ -47,6 +71,9 @@ module.exports = {
                 success: function(result) {
                     me.$parent.triggerSpinner = false;
                     me.$parent.commonData.list = result.list;
+                    console.log('==result.list;==>');
+                    console.log(result);
+                    console.log(result.list);
                 },
                 error: function (jqXHR, textStatus, errorThrown) { 
                     me.$parent.triggerSpinner = false;

@@ -20,7 +20,7 @@ cmd += 'docker container stop ' + site_container + "\n";
 cmd += 'docker container rm ' + site_container + "\n";
 
 
-cmd += 'docker run -d -p 10000:10000 -v "'+ site_path + '":/var/_localApp  --name  ' + site_container + ' ' + site_image  + "\n";
+cmd += 'docker run -d -p 10000:10000 -v "' + site_path + '":/var/_localApp -v "' + DATA_NAME + '":/var/_localAppDATA --name  ' + site_container + ' ' + site_image  + "\n";
 
 fs = require('fs');
 fs.writeFile(DATA_NAME + '/_cron/initAdmin_' + new Date().getTime() + '.sh', cmd, function (err) {

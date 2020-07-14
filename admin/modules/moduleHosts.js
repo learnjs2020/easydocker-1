@@ -7,13 +7,35 @@
         var fnHosts = env.dataFolder + '/tasks/refreshEtcHosts.sh';
         var fnRefreshProxy = env.dataFolder + '/tasks/fnRefreshProxy.sh';
         */
-        // var CP = new pkg.crowdProcess();
+        var CP = new pkg.crowdProcess();
 
 		this.postLoadList = (callback) => {
-            setTimeout(
-                () => {
-                    callback({status:'successA', message : []});
-                }, 3000);                
+            var dirn = '/var/_localAppDATA/sites';
+            var _f = {};
+
+            fs.readdir(dirn, function (err, files) {
+                var list = (err) ? [] : files.filter((v) => {
+                    return !(/^\./.test(v));
+                });
+                var list1 = [];
+                for (o in list) {
+                    _f[list[o]] = (function(o) {
+                        return (cbk) => {
+                            var v = {};
+                            try {
+                                v = require(dirn + '/' + list[o] + '/dockerSetting.json');
+
+                            } catch (e) {}
+                            list1.push({name : list[o], ports: v.ports.join(',')});
+                            cbk(true);
+                        }
+                    })(o);
+                    
+                }
+                CP.serial(_f, (data) => {
+                    callback({status:'success', list : list1});
+                }, 3000);  
+            });
 		}
 /*
         this.callList = (callback) => {
