@@ -43,14 +43,14 @@ module.exports = {
         var me = this;
         setTimeout(
             function() {
-                me.loadList()
-            }, 1000
+                me.getVHostList()
+            }, 50
         );
     },
     methods : {
-        loadList() {
+        getVHostList() {
             var me = this;
-            me.$parent.dataEngine().getVHostList(true);
+            me.$parent.dataEngine().getVHostList();
         },
         deleteVirtualServer(serverName) {
             var me = this;

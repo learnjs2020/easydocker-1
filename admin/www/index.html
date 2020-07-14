@@ -19,9 +19,10 @@
       <div class="col-1 p-0"></div>
       <div class="col-10 pt-6 text-center">
         <app-header></app-header>
-        <div>EasyDocker Admin</div>
-        <v-host-form></v-host-form>
-        <v-host-list></v-host-list>
+        
+        <v-host-form v-if="module=='form'"></v-host-form>
+        <v-host-list v-if="module=='list'"></v-host-list>
+        
         <data-engine ref="dataEngine"></data-engine>
         <pop-up-modal></pop-up-modal>
         <spinner></spinner>

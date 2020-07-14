@@ -10,18 +10,8 @@ module.exports = {
     },
     created() {
         var me = this;
-        me.initLoad();
     },
     methods :{
-        initLoad() {
-            var me = this;
-            me.$parent.triggerSpinner = true;
-            setTimeout(
-                function() {
-                    me.$parent.triggerSpinner = false;
-                }, 3000
-            );
-        },
         removeVirtualHost(serverName) {
             var me = this;
             $('#confirm_modal').modal('hide');
@@ -57,6 +47,9 @@ module.exports = {
                 success: function(result) {
                     me.$parent.triggerSpinner = false;
                     me.$parent.commonData.list = result.list;
+                },
+                error: function (jqXHR, textStatus, errorThrown) { 
+                    me.$parent.triggerSpinner = false;
                 },
                 dataType: 'JSON'
             });

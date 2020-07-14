@@ -102,7 +102,7 @@ module.exports = {
         var me = this;
         setTimeout(
             function() {
-                me.loadDockersList()
+               // me.loadDockersList()
             }, 1000
         );
     },
@@ -121,7 +121,7 @@ module.exports = {
         },
         loadDockersList() {
             var me = this;
-            me.$parent.dataEngine().loadDockersList(true);
+          //  me.$parent.dataEngine().loadDockersList(true);
         },
         gitRemoteBranchs(gitRecord) {
             var me = this;

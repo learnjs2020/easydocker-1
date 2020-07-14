@@ -91,7 +91,8 @@ $(document).ready(
                         },
                         formStarted : false
                     },
-                    triggerSpinner : false
+                    triggerSpinner : false,
+                    module : 'list'
                 }
             },
             methods :{

@@ -8,7 +8,35 @@
 		    me.sendFile(fn);
 		};	
 		this.post = () => {
-            var me = this;
+			var me = this;
+			var MHosts = pkg.require(env.root+ '/modules/moduleHosts.js');
+
+            switch(req.body.cmd) {
+              case 'loadList' :
+	
+				var hosts = new MHosts(env, pkg);
+                hosts.postLoadList(
+					function(data) {
+						res.send(data);
+					});
+				break;
+			/*	
+              case 'addHost' :
+                me.postSaveHost(req.body.data);
+                break;
+              case 'deleteHost' :
+                me.postRemoveHost(req.body.serverName);
+                break;
+              case 'loadDockersList' :
+                  me.loadDockersList();
+                  break;
+              case 'gitRemoteBranchs' :
+                    me.gitRemoteBranchs();
+					break;
+					*/
+              default :
+                res.send({status:'failure', message : '404 wrong cmd!'});
+            }
 		};
 
 		this.sendFile = (fn) => {
