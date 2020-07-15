@@ -1,11 +1,7 @@
 <template>
 <div class="card shadow m-2 mr-1">
     <div class="card-body card-form-section">
-        <div v-if="!$parent.commonData.formStarted">
-            <div class="m-3 text-center"><button class="btn btn-success" v-on:click="startFrom()">Click here to add a new virtual host</button></div>
-            <div class="noFormImage"></div>
-        </div>
-        <form v-if="$parent.commonData.formStarted" >
+        <form>
             <div class="form-group">
                 <label>Repository git URI *</label>
                 <input type="text" class="form-control" v-model="form.gitHub" @input="changedGit" placeholder="Repository git URI">

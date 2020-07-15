@@ -1,30 +1,16 @@
 <template>
     <div class="card shadow m-2 ml-1">
         <div class="card-body card-list-section">
-            <h4>Virtual Hosts List</h4>
+
             <div class="list-group " id="list_section" v-for="item in  $parent.commonData.list">
                 <div class="list-group-item list-group-item-action flex-column align-items-start mb-0">
 
                     <div class="container-fluid m-0">
                         <div class="row">
-                            <div class="col-2 p-0 m-0 text-center pr-3">
+                            <div class="col-3 p-0 m-0 text-left">
                                 <h3><b>{{item.name}}</b></h3>
                             </div>
-                           <div class="col-4 p-0 m-0 text-center pr-3">
-                                <a class="btn btn-sm btn-warning m-1" href="JavaScript:void(0)" v-on:click="deleteVirtualServer(item.serverName)">
-                                    Delete
-                                </a>
-                                <a class="btn btn-sm btn-info m-1" href="JavaScript:void(0)" v-on:click="resetVHost(item.name)">
-                                    Reboot
-                                </a>
-                                <a class="btn btn-sm btn-danger m-1" href="JavaScript:void(0)" v-on:click="stopVHost(item.name)">
-                                    Stop
-                                </a>
-                                <a class="btn btn-sm btn-success m-1" href="JavaScript:void(0)" v-on:click="pullCode(item.name)">
-                                    Pull code
-                                </a>
-                            </div>
-                            <div class="col-6 p-0 m-0">
+                            <div class="col-9 p-0 m-0 text-left">
                                 Server name: <span class="text-info">{{item.name}}</span>
                                 <span class="ml-3">
                                     Port : <span class="text-info"> {{outerPorts(item)}} </span>
@@ -38,7 +24,19 @@
                                 github : <span class="text-info"> {{item.gitHub}}</span><br/>
                                 branch : <span class="text-info"> {{item.branch}}</span>
                                 </span-->
-
+                                <br/>
+                                <a class="btn btn-sm btn-warning m-1" href="JavaScript:void(0)" v-on:click="deleteVirtualServer(item.serverName)">
+                                    Delete
+                                </a>
+                                <a class="btn btn-sm btn-info m-1" href="JavaScript:void(0)" v-on:click="resetVHost(item.name)">
+                                    Reboot
+                                </a>
+                                <a class="btn btn-sm btn-danger m-1" href="JavaScript:void(0)" v-on:click="stopVHost(item.name)">
+                                    Stop
+                                </a>
+                                <a class="btn btn-sm btn-success m-1" href="JavaScript:void(0)" v-on:click="pullCode(item.name)">
+                                    Pull code
+                                </a>
                             </div>
                         </div>
                     </div>
