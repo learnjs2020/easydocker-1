@@ -13,22 +13,64 @@ module.exports = {
     },
     methods :{
         resetVHost(serverName) {
-           var me = this;
-            if (!noSpinner) {
-                me.$parent.triggerSpinner = true;
-            }
+            var me = this;
+
+            me.$parent.triggerSpinner = true;
+
             $.ajax({
                 type: 'POST',
                 url:'/api',
                 data: {
-                    cmd :'loadList'
+                    cmd :'resetVHost',
+                    serverName : serverName
                 },
                 success: function(result) {
                     me.$parent.triggerSpinner = false;
-                    me.$parent.commonData.list = result.list;
-                    console.log('==result.list;==>');
                     console.log(result);
-                    console.log(result.list);
+                },
+                error: function (jqXHR, textStatus, errorThrown) { 
+                    me.$parent.triggerSpinner = false;
+                },
+                dataType: 'JSON'
+            });
+        },
+        stopVHost(serverName) {
+            var me = this;
+
+            me.$parent.triggerSpinner = true;
+
+            $.ajax({
+                type: 'POST',
+                url:'/api',
+                data: {
+                    cmd :'stopVHost',
+                    serverName : serverName
+                },
+                success: function(result) {
+                    me.$parent.triggerSpinner = false;
+                    console.log(result);
+                },
+                error: function (jqXHR, textStatus, errorThrown) { 
+                    me.$parent.triggerSpinner = false;
+                },
+                dataType: 'JSON'
+            });
+        },
+        pullCode(serverName) {
+            var me = this;
+
+            me.$parent.triggerSpinner = true;
+
+            $.ajax({
+                type: 'POST',
+                url:'/api',
+                data: {
+                    cmd :'pullCode',
+                    serverName : serverName
+                },
+                success: function(result) {
+                    me.$parent.triggerSpinner = false;
+                    console.log(result);
                 },
                 error: function (jqXHR, textStatus, errorThrown) { 
                     me.$parent.triggerSpinner = false;

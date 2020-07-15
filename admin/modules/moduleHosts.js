@@ -2,14 +2,94 @@
     var obj = function(env, pkg) {
         var fs = require('fs');
         var exec = require('child_process').exec;
-        /*
-        var fn = env.dataFolder + '/setting/hosts.json';
-        var fnHosts = env.dataFolder + '/tasks/refreshEtcHosts.sh';
-        var fnRefreshProxy = env.dataFolder + '/tasks/fnRefreshProxy.sh';
-        */
-        var CP = new pkg.crowdProcess();
+
+        this.pullCode = (serverName, callback) => {
+            var CP = new pkg.crowdProcess();
+            var data_dir = '/var/_localAppDATA';
+
+            var site_path = data_dir + '/sites/' + serverName;
+
+            var cmd = 'cd ' + site_path + ' && git pull';
+    
+            exec(cmd, {maxBuffer: 1024 * 2048},
+                function(error, stdout, stderr) {
+                    callback({status:'success'});
+            });
+        }; 
+       this.stopVHost = (serverName, callback) => {
+            var CP = new pkg.crowdProcess();
+            var data_dir = '/var/_localAppDATA';
+            var dirn = data_dir + '/sites';
+            var _f = {};
+            var _env = {};
+            try {
+                _env = require(data_dir + '/_env.json');
+            } catch (e) {}
+
+            var site_container = serverName + '-container';
+            var cmd = '';
+            cmd += 'echo "Start docker app .."' + "\n";
+            cmd += 'docker container stop ' + site_container + "\n";
+            cmd += 'docker container rm ' + site_container + "\n";
+            
+            fs = require('fs');
+            fs.writeFile(data_dir + '/_cron/stopHost_' + new Date().getTime() + '.sh', cmd, function (err) {
+                setTimeout(() => {
+                    callback({status:'success'});
+                }, 500)
+            });
+        };
+
+		this.resetVHost = (serverName, callback) => {
+            var CP = new pkg.crowdProcess();
+            var data_dir = '/var/_localAppDATA';
+            var dirn = data_dir + '/sites';
+            var _f = {};
+            var _env = {};
+            try {
+                _env = require(data_dir + '/_env.json');
+            } catch (e) {}
+            
+            var dockerFile = 'angular11';
+            var dockerFn = _env.code_folder + '/dockerFiles/' + dockerFile;
+            
+            var site_image = dockerFile + '-image';
+            var site_container = serverName + '-container';
+            
+            var site_path = _env.data_folder + '/sites/' + serverName;
+            
+            var cfg = {};
+            
+            try {
+                cfg = require(dirn + '/' + serverName +  '/dockerSetting.json'); 
+            } catch (e) {}
+            
+            var cmd = '';
+            cmd += 'echo "Start docker app .."' + "\n";
+            cmd += 'cd ' + site_path + "\n";
+            cmd += 'docker build -f ' + dockerFn + ' -t ' + site_image + ' .' + "\n";
+            cmd += 'docker container stop ' + site_container + "\n";
+            cmd += 'docker container rm ' + site_container + "\n";
+            
+            var cmd_ports  = '';
+            for (var i = 0;  i < cfg.ports.length; i++) {
+                cmd_ports += ' -p ' +  cfg.ports[i] + ':' +  cfg.ports[i] + ' '
+            }
+           
+            cmd += 'docker run -d ' + cmd_ports + ' -v "'+ site_path + '":/var/_localApp  --name  ' + site_container + ' ' + site_image  + "\n";
+             
+            
+            fs = require('fs');
+            fs.writeFile(data_dir + '/_cron/addHost_' + new Date().getTime() + '.sh', cmd, function (err) {
+                setTimeout(() => {
+                    callback({status:'success'});
+                }, 500)
+            });
+		};
+
 
 		this.postLoadList = (callback) => {
+            var CP = new pkg.crowdProcess();
             var dirn = '/var/_localAppDATA/sites';
             var _f = {};
 

@@ -44,6 +44,8 @@ fi
 node initAdmin.js
 
 echo "\nloading cron job"
+echo "{\"code_folder\": \"$PWD\", \"data_folder\": \"$DATA_DIR\"}" > "$DATA_DIR"/_env.json
+
 # sh cron.sh > /dev/null &
 stsCron=1
 until [[ $stsCron == 0 ]]
@@ -51,7 +53,7 @@ do
     if [ $stsCron != 0 ] ; then
         sh cron.sh &
     fi
-    sleep 1
+    sleep 0.5
 done
 
 

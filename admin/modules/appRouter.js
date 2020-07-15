@@ -12,14 +12,42 @@
 			var MHosts = pkg.require(env.root+ '/modules/moduleHosts.js');
 
             switch(req.body.cmd) {
-              case 'loadList' :
+
+				case 'resetVHost' :
 	
-				var hosts = new MHosts(env, pkg);
-                hosts.postLoadList(
-					function(data) {
-						res.send(data);
-					});
-				break;
+					var hosts = new MHosts(env, pkg);
+					hosts.resetVHost(req.body.serverName,
+						function(data) {
+							res.send(data);
+						});
+					break;
+
+				case 'pullCode' :
+
+					var hosts = new MHosts(env, pkg);
+					hosts.pullCode(req.body.serverName,
+						function(data) {
+							res.send(data);
+						});
+					break;
+
+				case 'stopVHost' :
+
+					var hosts = new MHosts(env, pkg);
+					hosts.stopVHost(req.body.serverName,
+						function(data) {
+							res.send(data);
+						});
+					break;
+
+				case 'loadList' :
+		
+					var hosts = new MHosts(env, pkg);
+					hosts.postLoadList(
+						function(data) {
+							res.send(data);
+						});
+					break;
 			/*	
               case 'addHost' :
                 me.postSaveHost(req.body.data);

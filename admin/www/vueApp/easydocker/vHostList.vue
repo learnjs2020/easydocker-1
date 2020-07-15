@@ -7,16 +7,24 @@
 
                     <div class="container-fluid m-0">
                         <div class="row">
-                            <div class="col-3 p-0 m-0 text-center pr-3">
+                            <div class="col-2 p-0 m-0 text-center pr-3">
                                 <h3><b>{{item.name}}</b></h3>
-                                <a class="btn btn-sm btn-warning" href="JavaScript:void(0)" v-on:click="deleteVirtualServer(item.serverName)">
+                            </div>
+                           <div class="col-4 p-0 m-0 text-center pr-3">
+                                <a class="btn btn-sm btn-warning m-1" href="JavaScript:void(0)" v-on:click="deleteVirtualServer(item.serverName)">
                                     Delete
                                 </a>
-                                <a class="btn btn-sm btn-danger" href="JavaScript:void(0)" v-on:click="resetVHost(item.name)">
+                                <a class="btn btn-sm btn-info m-1" href="JavaScript:void(0)" v-on:click="resetVHost(item.name)">
                                     Reboot
                                 </a>
+                                <a class="btn btn-sm btn-danger m-1" href="JavaScript:void(0)" v-on:click="stopVHost(item.name)">
+                                    Stop
+                                </a>
+                                <a class="btn btn-sm btn-success m-1" href="JavaScript:void(0)" v-on:click="pullCode(item.name)">
+                                    Pull code
+                                </a>
                             </div>
-                            <div class="col-9 p-0 m-0">
+                            <div class="col-6 p-0 m-0">
                                 Server name: <span class="text-info">{{item.name}}</span>
                                 <span class="ml-3">
                                     Port : <span class="text-info"> {{outerPorts(item)}} </span>
@@ -65,6 +73,14 @@ module.exports = {
             me.$parent.commonData.popUp.serverName = serverName;
             $('#confirm_modal').modal('show');
         },
+        stopVHost(serverName) {
+            var me = this;
+            me.$parent.dataEngine().stopVHost(serverName);
+        },
+        pullCode(serverName) {
+            var me = this;
+            me.$parent.dataEngine().pullCode(serverName);
+        },       
         resetVHost(serverName) {
             var me = this;
             me.$parent.dataEngine().resetVHost(serverName);
