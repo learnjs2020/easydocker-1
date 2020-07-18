@@ -40,6 +40,15 @@
 						});
 					break;
 
+				case 'getDockerHostsList' :
+		
+					var hosts = new MHosts(env, pkg);
+					hosts.getDockerHostsList(
+						function(data) {
+							res.send(data);
+						});
+					break;
+
 				case 'loadList' :
 		
 					var hosts = new MHosts(env, pkg);
@@ -48,6 +57,22 @@
 							res.send(data);
 						});
 					break;
+
+				case 'gitRemoteBranchs' :
+					me.gitRemoteBranchs();
+					break;
+
+				case 'loadDockersList' :
+					me.loadDockersList();
+					break;
+
+				case 'addHost' :
+					var hosts = new MHosts(env, pkg);
+					hosts.addHost(req.body.data, function(data) {
+						res.send(data);
+					});
+					break;
+
 			/*	
               case 'addHost' :
                 me.postSaveHost(req.body.data);
@@ -58,14 +83,28 @@
               case 'loadDockersList' :
                   me.loadDockersList();
                   break;
-              case 'gitRemoteBranchs' :
-                    me.gitRemoteBranchs();
-					break;
+
 					*/
               default :
                 res.send({status:'failure', message : '404 wrong cmd!'});
             }
 		};
+
+		this.loadDockersList = () => {
+			var MDockerfile= pkg.require(env.root+ '/modules/moduleDockerfile.js');
+			var dockers = new MDockerfile(env, pkg);
+			dockers.loadDockersList(function(list) {
+			  res.send({status:'successA', list : list });
+			});
+		}		
+
+        this.gitRemoteBranchs = () => {
+			var MGit = pkg.require(env.root+ '/modules/moduleGit.js');
+			var git = new MGit(env);
+			git.gitRemoteBranchs(req.body.data, function(result) {
+			  res.send(result);
+			});
+		}
 
 		this.sendFile = (fn) => {
 			fs.stat(fn, function(err, stat) {

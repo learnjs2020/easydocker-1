@@ -3,8 +3,9 @@
         var fs = require('fs');
         var exec = require('child_process').exec;
 
+        var sites_cfg = '/var/_localAppDATA/_sites_cfg.json';
+
         this.pullCode = (serverName, callback) => {
-            var CP = new pkg.crowdProcess();
             var data_dir = '/var/_localAppDATA';
 
             var site_path = data_dir + '/sites/' + serverName;
@@ -17,7 +18,6 @@
             });
         }; 
        this.stopVHost = (serverName, callback) => {
-            var CP = new pkg.crowdProcess();
             var data_dir = '/var/_localAppDATA';
             var dirn = data_dir + '/sites';
             var _f = {};
@@ -41,7 +41,6 @@
         };
 
 		this.resetVHost = (serverName, callback) => {
-            var CP = new pkg.crowdProcess();
             var data_dir = '/var/_localAppDATA';
             var dirn = data_dir + '/sites';
             var _f = {};
@@ -86,7 +85,35 @@
                 }, 500)
             });
 		};
+        this.getDockerHostsList = (callback) => {
+            var CP = new pkg.crowdProcess();
+            var dirn = '/var/_localAppDATA/sites';
+            var _f = {};
 
+            fs.readdir(dirn, function (err, files) {
+                var list = (err) ? [] : files.filter((v) => {
+                    return !(/^\./.test(v));
+                });
+                var list1 = [];
+                for (o in list) {
+                    _f[list[o]] = (function(o) {
+                        return (cbk) => {
+                            var v = {};
+                            try {
+                                v = require(dirn + '/' + list[o] + '/dockerSetting.json');
+
+                            } catch (e) {}
+                            list1.push({name : list[o], ports: v.ports.join(',')});
+                            cbk(true);
+                        }
+                    })(o);
+                    
+                }
+                CP.serial(_f, (data) => {
+                    callback({status:'success', list : list1});
+                }, 3000);  
+            });   
+        };
 
 		this.postLoadList = (callback) => {
             var CP = new pkg.crowdProcess();
@@ -116,7 +143,108 @@
                     callback({status:'success', list : list1});
                 }, 3000);  
             });
-		}
+        }
+
+        this.saveSitesHosts = (data, callback) => {
+            var me = this;
+            
+            var v = {};
+            try {
+                v = require(sites_cfg);
+            } catch (e) {}
+
+            v['serverName'] = {
+                dockerFile : data['dockerFile'],
+                gitHub     : data['gitHub'],
+                branch     : data['branch'],
+                ports      : data['ports'],
+                unidx      : data['unidx'] 
+            }
+
+            fs.writeFile(sites_cfg, 
+                JSON.stringify(v), (err) => {
+                    callback(err);
+            });
+        }
+        this.getSitesCfg = () => {
+            var v = {};
+            try {
+                v = require(sites_cfg);
+            } catch (e) {}
+            return v;
+        }    
+        this.getNewUnIdx = () => {
+            var me = this;
+            var sites_cfg = me.getSitesCfg();
+            var unidx_max = 0;
+            for (var o in sites_cfg) { 
+                if (sites_cfg.unidx > unidx_max) {
+                    unidx_max = sites_cfg.unidx;
+                }
+            }
+            for (var i = 0; i < unidx_max; i++) {
+                var mark = 0;
+                for (var o in sites_cfg) { 
+                    if (sites_cfg.unidx === (i + 1)) {
+                        mark = 1;
+                        break;
+                    }
+                }
+                if (!mark) {
+                    return i + 1;
+                }
+            }
+            return unidx_max + 1;
+        }
+
+        this.addHost = (data, callback) => {
+            var me = this;
+            var CP = new pkg.crowdProcess();
+            var _f={};
+
+            var sites_cfg = me.getSitesCfg();
+            data.unidx = me.getNewUnIdx();
+
+            callback(data);
+            return true;
+            
+            _f['cloneCode'] = function(cbk) {
+                delete require.cache[env.root+ '/modules/moduleGit.js'];
+                var MGit = require(env.root+ '/modules/moduleGit.js');
+                var git = new MGit(env);
+                git.gitClone(data, function(result) {
+                    cbk(true);
+                });
+            };
+
+            _f['SitesHosts'] = function(cbk) {
+                me.saveSitesHosts(data, cbk);
+            };
+
+
+            _f['EtcHosts'] = function(cbk) {
+                me.saveEtcHosts(cbk);
+            };
+            _f['VHosts'] = function(cbk) {
+                me.createVhostConfig(cbk);
+            };
+
+            _f['addSiteClonDataFolder'] = function(cbk) {
+                me.addSiteClonDataFolder(data, cbk);
+            };
+
+            _f['addDocker'] = function(cbk) {
+                me.addDocker(data, cbk);
+            };
+
+            _f['refreshProxy'] = function(cbk) {
+                me.refreshProxy(cbk);
+            };
+
+            CP.serial(_f, function(data) {
+                callback(CP.data.SitesHosts);
+            }, 30000);
+        }
 /*
         this.callList = (callback) => {
             var me = this;

@@ -1,6 +1,6 @@
 <template>
 <div class="card shadow m-2 mr-1">
-    <div class="card-body card-form-section">
+    <div class="card-body card-form-section text-left">
         <form>
             <div class="form-group">
                 <label>Repository git URI *</label>
@@ -41,10 +41,10 @@
                 <input type="text" class="form-control" maxlength="64" v-model="form.serverName" placeholder="Host ServerName">
             </div>
 
-            <div class="form-group" v-if="branches!==null" >
+            <!--div class="form-group" v-if="branches!==null" >
                 <label>Open Ports</label>
                 <input type="text" class="form-control" maxlength="64" v-model="form.ports" placeholder="ports">
-            </div>
+            </div-->
 
             <div class="form-group" v-if="branches!==null">
                 <label>Dockerfile</label>
@@ -62,7 +62,6 @@
                     </div>
             </div>
 
-           
             <button type="button" v-if="branches!==null" class="btn btn-info" v-on:click="saveVHost()">Save the virtual host</button>
             <!--button type="button" class="btn btn-warning" v-on:click="reset()">Reset fields</button-->
             <button type="button" class="btn btn-secondary" v-on:click="cancel()">Cancel</button>
@@ -98,7 +97,7 @@ module.exports = {
         var me = this;
         setTimeout(
             function() {
-               // me.loadDockersList()
+                me.loadDockersList()
             }, 1000
         );
     },
@@ -108,7 +107,7 @@ module.exports = {
             me.branches = null;
             me.form.branch = '';
             me.form.serverName = '';
-            me.form.ports = '';
+        //    me.form.ports = '';
             me.form.dockerFile = '';
         },
         changedGit(e) {
@@ -117,7 +116,7 @@ module.exports = {
         },
         loadDockersList() {
             var me = this;
-          //  me.$parent.dataEngine().loadDockersList(true);
+            me.$parent.dataEngine().loadDockersList(true);
         },
         gitRemoteBranchs(gitRecord) {
             var me = this;
@@ -149,6 +148,9 @@ module.exports = {
             } 
             me.$parent.dataEngine().saveVHostForm(
                 me.form, function(result) {
+                    console.log('---result---');
+                    console.log(result);
+                    return true;
                     if (result.status === 'success') {
                         me.cancel();
                     }
@@ -200,6 +202,8 @@ module.exports = {
             return (!me.errors.gitHub) ? true : false;
         },
         portValidation() {
+            return true;
+            /*
             var me = this;
             delete me.errors.ports;
             if (!me.form.ports) {
@@ -217,12 +221,13 @@ module.exports = {
                 }
             } 
             return true ;
+            */
         },
         formValidation() {
             var me = this;
             me.errors = {};
             me.gitValidation();
-            me.portValidation();
+            // me.portValidation();
 
             if (!me.form.serverName) {
                 me.errors.serverName = 'ServerName required.';
