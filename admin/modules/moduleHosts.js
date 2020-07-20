@@ -50,9 +50,9 @@
             } catch (e) {}
             
             var dockerFile = 'angular11';
-            var dockerFn = _env.code_folder + '/dockerFiles/' + dockerFile;
+            var dockerFn = _env.code_folder + '/dockerFiles/admin_dockerfile/dockerFile';
             
-            var site_image = dockerFile + '-image';
+            var site_image = 'admin-image'; // ---TODO
             var site_container = serverName + '-container';
             
             var site_path = _env.data_folder + '/sites/' + serverName;
@@ -63,6 +63,11 @@
                 cfg = require(dirn + '/' + serverName +  '/dockerSetting.json'); 
             } catch (e) {}
             
+            var sitesCfg = {};
+            try {
+                sitesCfg= pkg.require(sites_cfg)[serverName];
+            } catch (e) {}
+
             var cmd = '';
             cmd += 'echo "Start docker app .."' + "\n";
             cmd += 'cd ' + site_path + "\n";
@@ -72,7 +77,7 @@
             
             var cmd_ports  = '';
             for (var i = 0;  i < cfg.ports.length; i++) {
-                cmd_ports += ' -p ' +  cfg.ports[i] + ':' +  cfg.ports[i] + ' '
+                cmd_ports += ' -p ' + ((sitesCfg.unidx * 10000) + cfg.ports[i]) + ':' + cfg.ports[i] + ' ';
             }
            
             cmd += 'docker run -d ' + cmd_ports + ' -v "'+ site_path + '":/var/_localApp  --name  ' + site_container + ' ' + site_image  + "\n";
@@ -114,35 +119,37 @@
                 }, 3000);  
             });   
         };
-
 		this.postLoadList = (callback) => {
             var CP = new pkg.crowdProcess();
-            var dirn = '/var/_localAppDATA/sites';
             var _f = {};
 
-            fs.readdir(dirn, function (err, files) {
-                var list = (err) ? [] : files.filter((v) => {
-                    return !(/^\./.test(v));
-                });
-                var list1 = [];
-                for (o in list) {
-                    _f[list[o]] = (function(o) {
-                        return (cbk) => {
-                            var v = {};
-                            try {
-                                v = require(dirn + '/' + list[o] + '/dockerSetting.json');
+            var sitesCfg = {};
+            try {
+                sitesCfg= pkg.require(sites_cfg);
+            } catch (e) {}
 
-                            } catch (e) {}
-                            list1.push({name : list[o], ports: v.ports.join(',')});
-                            cbk(true);
+            var dirn = '/var/_localAppDATA/sites';
+
+            var list = [];
+            for (o in sitesCfg) {
+                _f[o] = (function(o) {
+                    return (cbk) => {
+                        var v = {};
+                        try {
+                            v = pkg.require(dirn + '/' + o + '/dockerSetting.json');
+                        } catch (e) {}
+                        var ports = [];
+                        for (var i = 0; i < v.ports.length; i++) {
+                            ports.push({i : v.ports[i], o : (sitesCfg[o].unidx * 10000) + v.ports[i]})
                         }
-                    })(o);
-                    
-                }
-                CP.serial(_f, (data) => {
-                    callback({status:'success', list : list1});
-                }, 3000);  
-            });
+                        list.push({name : o, ports: ports});
+                        cbk(true);
+                    }
+                })(o);
+            }
+            CP.serial(_f, (data) => {
+                callback({status:'success', list : list});
+            }, 3000); 
         }
 
         this.saveSitesHosts = (data, callback) => {
@@ -152,15 +159,16 @@
             try {
                 v = require(sites_cfg);
             } catch (e) {}
-
-            v['serverName'] = {
-                dockerFile : data['dockerFile'],
-                gitHub     : data['gitHub'],
-                branch     : data['branch'],
-                ports      : data['ports'],
-                unidx      : data['unidx'] 
-            }
-
+            try {
+                v[data['serverName']] = {
+                    dockerFile : data['dockerFile'],
+                    gitHub     : data['gitHub'],
+                    branch     : data['branch'],
+                    ports      : data['ports'],
+                    unidx      : data['unidx'] 
+                }
+            } catch (e) {}
+            
             fs.writeFile(sites_cfg, 
                 JSON.stringify(v), (err) => {
                     callback(err);
@@ -178,14 +186,14 @@
             var sites_cfg = me.getSitesCfg();
             var unidx_max = 0;
             for (var o in sites_cfg) { 
-                if (sites_cfg.unidx > unidx_max) {
-                    unidx_max = sites_cfg.unidx;
+                if (sites_cfg[o].unidx > unidx_max) {
+                    unidx_max = sites_cfg[o].unidx;
                 }
             }
             for (var i = 0; i < unidx_max; i++) {
                 var mark = 0;
                 for (var o in sites_cfg) { 
-                    if (sites_cfg.unidx === (i + 1)) {
+                    if (sites_cfg[o].unidx === (i + 1)) {
                         mark = 1;
                         break;
                     }
@@ -202,43 +210,19 @@
             var CP = new pkg.crowdProcess();
             var _f={};
 
-            var sites_cfg = me.getSitesCfg();
             data.unidx = me.getNewUnIdx();
 
-            callback(data);
-            return true;
-            
             _f['cloneCode'] = function(cbk) {
-                delete require.cache[env.root+ '/modules/moduleGit.js'];
-                var MGit = require(env.root+ '/modules/moduleGit.js');
+                var MGit = pkg.require(env.root+ '/modules/moduleGit.js');
                 var git = new MGit(env);
                 git.gitClone(data, function(result) {
                     cbk(true);
                 });
             };
 
+ 
             _f['SitesHosts'] = function(cbk) {
                 me.saveSitesHosts(data, cbk);
-            };
-
-
-            _f['EtcHosts'] = function(cbk) {
-                me.saveEtcHosts(cbk);
-            };
-            _f['VHosts'] = function(cbk) {
-                me.createVhostConfig(cbk);
-            };
-
-            _f['addSiteClonDataFolder'] = function(cbk) {
-                me.addSiteClonDataFolder(data, cbk);
-            };
-
-            _f['addDocker'] = function(cbk) {
-                me.addDocker(data, cbk);
-            };
-
-            _f['refreshProxy'] = function(cbk) {
-                me.refreshProxy(cbk);
             };
 
             CP.serial(_f, function(data) {
@@ -541,26 +525,6 @@
             str += 'ProxyPassReverse / http://' + rec.ip + ':' + rec.port + '/' + "\n";
             str += '</VirtualHost>' + "\n\n";
             return str;
-        }
-        this.createVhostConfig = (callback) => {
-            var me = this;
-            var list = me.getList();
-            var fnVhostConfig = env.dataFolder + '/setting/vHost.conf';
-            var strVHostRec = '';
-            for (v in list) {
-                var port_a = list[v].ports.split(',');
-                for (var i = 0; i < port_a.length; i++) {
-                    strVHostRec += me.vHostRec({
-                        port        :  10000 * parseInt(list[v].unidx + '') + parseInt(port_a[i]),
-                        serverName  : list[v].serverName,
-                        ip  : '10.10.10.254',
-                        innerPort  : parseInt(port_a[i])
-                    })
-                }
-            }
-            fs.writeFile(fnVhostConfig, strVHostRec, (err) => {
-                callback(err);
-            });
         }
         */
     }

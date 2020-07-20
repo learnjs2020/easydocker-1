@@ -15,9 +15,6 @@
                                 <span class="ml-3">
                                     Port : <span class="text-info"> {{outerPorts(item)}} </span>
                                 </span>
-                                <!--span class="ml-3">
-                                    innerPort - outerPort : <span class="text-info"> {{outerPorts(item)}} </span>
-                                </span-->
                                 <!--span>
                                 <br/>
                                 Docker file: <span class="text-info">{{item.dockerFile}}</span><br/>
@@ -86,9 +83,9 @@ module.exports = {
         outerPorts(item) {
             var me = this;
             var str = '';
-            var p = item.ports.split(',');
+            var p = item.ports;
             for (var i = 0; i < p.length; i++) {
-                str += parseInt(p[i]) + '-' + parseInt(parseInt(item.unidx) + '0000') +  parseInt(p[i]) + ','
+                str += p[i].i + '-' + p[i].o
             }
             return str.replace(/\,$/,'');
         }

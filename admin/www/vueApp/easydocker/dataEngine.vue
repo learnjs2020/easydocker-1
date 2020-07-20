@@ -138,6 +138,9 @@ module.exports = {
                     me.$parent.triggerSpinner = false;
                     me.$parent.commonData.dockers = result.list;
                 },
+                error: function (jqXHR, textStatus, errorThrown) { 
+                    me.$parent.triggerSpinner = false;
+                },
                 dataType: 'JSON'
             });
         },
@@ -183,6 +186,9 @@ module.exports = {
                         // me.getVHostList();
                     }
                     callback(result); 
+                },
+                error: function (jqXHR, textStatus, errorThrown) { 
+                    me.$parent.triggerSpinner = false;
                 },
                 dataType: 'JSON'
             });
